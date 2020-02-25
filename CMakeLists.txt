@@ -13,6 +13,7 @@ set(OTHELLO_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src/othello")
 
 #The source files
 set(OTHELLO_SOURCE_FILES
+        "${OTHELLO_SOURCE_DIR}/ai/AlphaBetaPruningPlayer.cpp"
         "${OTHELLO_SOURCE_DIR}/ai/MoveEvaluator.cpp"
         "${OTHELLO_SOURCE_DIR}/cmd/BoardPrinter.cpp"
         "${OTHELLO_SOURCE_DIR}/game/Board.cpp"
