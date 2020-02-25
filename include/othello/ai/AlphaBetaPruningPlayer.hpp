@@ -65,12 +65,15 @@ namespace othello
                     //If we've reached the max is depth or this is the last move
                     if (depth == 0 || board.isOver())
                     {
-                        return ai::MoveEvaluator::evaluate(board, move);
+                        return ai::MoveEvaluator::evaluate(board, move, player);
                     }
+                    
+                    //Whether we're maximising (whether we want the best or worst move)
+                    bool maximising = board.getCurrentPlayer() == player;
                     
                     //Create a temporary board
                     game::Board tmpBoard;
-                    int64_t value = board.getCurrentPlayer() == player ? INT64_MIN : INT64_MAX;
+                    int64_t value = maximising ? INT64_MIN : INT64_MAX;
                     
                     //Iterate over the possible moves
                     for (std::size_t i = 0; i < board.getPossibleMoves().size(); ++i)
@@ -79,8 +82,8 @@ namespace othello
                         tmpBoard = board;
                         //Make the move
                         tmpBoard.makeMove(&tmpBoard.getPossibleMoves()[i]);
-                        //If the current player is the AI, we want the max
-                        if (board.getCurrentPlayer() == player)
+                        //If we want to maximise the value
+                        if (maximising)
                         {
                             value = std::max(value, alphaBeta(tmpBoard, board.getPossibleMoves()[i],
                                     depth - 1, alpha, beta));
