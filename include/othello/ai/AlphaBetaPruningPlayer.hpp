@@ -6,6 +6,7 @@
 //Othello headers:
 #include <othello/game/IPlayer.hpp>
 #include <othello/game/Game.hpp>
+#include <othello/util/WorkerThreadManager.hpp>
 
 
 namespace othello
@@ -60,6 +61,14 @@ namespace othello
                 ////////////////////////////////////////////////////////////////
                 int64_t alphaBeta(const game::Board& board, const game::Move& move, uint8_t depth,
                         int64_t alpha, int64_t beta);
+                
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief The worker thread manager
+                ///
+                ////////////////////////////////////////////////////////////////
+                util::WorkerThreadManager<int64_t, const game::Board&, const game::Move&,
+                        uint8_t, int64_t, int64_t> workerManager;
         
                 
             public:
@@ -70,10 +79,16 @@ namespace othello
                 /// \param game A const reference to the game
                 /// \param player The player number. 0 = player1, 1 = player2
                 /// \param searchDepth The search depth of the AI
+                /// \param numThreads The number of worker threads
                 ///
                 ////////////////////////////////////////////////////////////////
-                explicit AlphaBetaPruningPlayer(const game::Game& game, const uint8_t& player, const unsigned int& searchDepth)
-                    : game(game), player(player), searchDepth(searchDepth) {}
+                explicit AlphaBetaPruningPlayer(const game::Game& game, const uint8_t& player,
+                        const unsigned int& searchDepth, const uint8_t& numThreads)
+                    : game(game), player(player), searchDepth(searchDepth),
+                        workerManager(std::bind(&AlphaBetaPruningPlayer::alphaBeta, this,
+                                std::placeholders::_1, std::placeholders::_2, //I really wish there were a better
+                                std::placeholders::_3, std::placeholders::_4, //syntax for doing this
+                                std::placeholders::_5), numThreads) {}
                 
                 
                 ////////////////////////////////////////////////////////////////

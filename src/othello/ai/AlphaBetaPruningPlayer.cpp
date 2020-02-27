@@ -32,18 +32,21 @@ namespace othello
                 tmpBoard = board;
                 //Make the move
                 tmpBoard.makeMove(&tmpBoard.getPossibleMoves()[i]);
+            
+                //Calculate the alpha beta
+                int64_t ret = alphaBeta(tmpBoard, board.getPossibleMoves()[i],
+                                        depth - 1, alpha, beta);
+                
                 //If we want to maximise the value
                 if (maximising)
                 {
-                    value = std::max(value, alphaBeta(tmpBoard, board.getPossibleMoves()[i],
-                                                      depth - 1, alpha, beta));
+                    value = std::max(value, ret);
                     alpha = std::max(alpha, value);
                 }
                     //If it's the other player, we want the min
                 else
                 {
-                    value = std::min(value, alphaBeta(tmpBoard, board.getPossibleMoves()[i],
-                                                      depth - 1, alpha, beta));
+                    value = std::min(value, ret);
                     beta = std::min(beta, value);
                 }
                 //If the alpha is larger than the beta, break out of the loop
@@ -56,9 +59,8 @@ namespace othello
         ////////////////////////////////////////////////////////////////
         const game::Move* AlphaBetaPruningPlayer::makeMove(const std::vector<game::Move>& possibleMoves)
         {
-            //A map of move indexes with the associated move value as the key
-            //(the index being the key means the data is automatically sorted)
-            std::map<int64_t, std::size_t> movesAndValues;
+            //Create a vector of the future move values
+            std::vector<util::FutureValue<int64_t> > futureValues;
             
             //Iterate over the possible moves
             game::Board tmpBoard;
@@ -68,10 +70,35 @@ namespace othello
                 tmpBoard = game.getBoard();
                 //Make the move
                 tmpBoard.makeMove(&tmpBoard.getPossibleMoves()[i]);
-                //Calculate the move's value and put it in the map
-                movesAndValues.emplace(
-                        alphaBeta(tmpBoard, game.getBoard().getPossibleMoves()[i],
-                                searchDepth,INT64_MIN, INT64_MAX), i);
+                
+                //If the worker manager has a worker available
+                if (workerManager.hasAvailableWorker())
+                {
+                    //Tell the worker to start and then add the future value to the vector
+                    futureValues.emplace_back(
+                            workerManager.startWork(
+                                    tmpBoard, game.getBoard().getPossibleMoves()[i],
+                                    searchDepth, INT64_MIN, INT64_MAX));
+                }
+                else
+                {
+                    //Work on it in this thread and then place the value in the vector
+                    futureValues.emplace_back(alphaBeta(tmpBoard, game.getBoard().getPossibleMoves()[i],
+                                                        searchDepth,INT64_MIN, INT64_MAX));
+                }
+            }
+    
+            //A map of move indexes with the associated move value as the key
+            //(the index being the key means the data is automatically sorted)
+            std::map<int64_t, std::size_t> movesAndValues;
+            
+            //Iterate over the future values
+            for (std::size_t i = 0; i < futureValues.size(); ++i)
+            {
+                //Wait for the value if it isn't here yet
+                futureValues[i].wait();
+                //Add the value to the map
+                movesAndValues.emplace(futureValues[i].get(), i);
             }
     
             //Create a vector of the best moves

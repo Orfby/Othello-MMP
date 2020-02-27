@@ -25,6 +25,8 @@ namespace othello
             unsigned int numGames;
             //The search depth
             unsigned int searchDepth;
+            //The number of threads
+            unsigned int numThreads;
             
             //Create the options description object
             boost::program_options::options_description description("Options");
@@ -44,7 +46,11 @@ namespace othello
                     ("search-depth,sd", boost::program_options::value<unsigned int>(&searchDepth)->default_value(5),
                             "The maximum number of moves an AI will look ahead. "
                             "Only applicable to players that try to predict moves, such as ai_ab_minimax. "
-                            "Larger numbers exponentially affect speed and memory use. Default is 5");
+                            "Larger numbers exponentially affect speed and memory use. Default is 5")
+                    ("num-threads,t", boost::program_options::value<unsigned int>(&numThreads)->default_value(4),
+                            "The number of worker threads an AI will use when determining moves. "
+                            "Only applicable to players that use multithreading, such as ai_ab_minimax. "
+                            "Default is 4");
             
             //Create the variables map
             boost::program_options::variables_map variablesMap;
@@ -94,7 +100,8 @@ namespace othello
                     if (!guiMode) {players[i].reset(new othello::cmd::HumanPlayer());}
                 }
                 else if (playerType == "ai_random") {players[i].reset(new othello::ai::RandomPlayer());}
-                else if (playerType == "ai_ab_minimax") {players[i].reset(new othello::ai::AlphaBetaPruningPlayer(game, i, searchDepth));}
+                else if (playerType == "ai_ab_minimax") {players[i].reset(new othello::ai::AlphaBetaPruningPlayer(
+                        game, i, searchDepth, numThreads));}
                 else
                 {
                     std::cerr << "Unknown player type '" << playerTypes[i] << "'" << std::endl;
