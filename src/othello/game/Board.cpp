@@ -253,7 +253,7 @@ namespace othello
     
     
         ////////////////////////////////////////////////////////////////
-        uint8_t Board::getCurrentPlayer() const {return currentPlayer;}
+        const uint8_t& Board::getCurrentPlayer() const {return currentPlayer;}
     
     
         ////////////////////////////////////////////////////////////////
@@ -335,7 +335,7 @@ namespace othello
     
     
         ////////////////////////////////////////////////////////////////
-        std::pair<uint8_t, uint8_t> Board::getScore() const {return score;}
+        const std::pair<uint8_t, uint8_t>& Board::getScore() const {return score;}
     
     
         ////////////////////////////////////////////////////////////////

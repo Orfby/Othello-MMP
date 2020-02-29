@@ -104,11 +104,11 @@ namespace othello
                 ////////////////////////////////////////////////////////////////
                 /// \brief Function to get the player who's turn it currently is
                 ///
-                /// \return The index of the player who's turn it is (0 = player
-                ///         1, 1 = player2)
+                /// \return A const reference to the index of the player who's
+                ///         turn it is (0 = player 1, 1 = player2)
                 ///
                 ////////////////////////////////////////////////////////////////
-                uint8_t getCurrentPlayer() const;
+                const uint8_t& getCurrentPlayer() const;
         
         
                 ////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ namespace othello
                 ///         player 1's score and the second is player 2's score
                 ///
                 ////////////////////////////////////////////////////////////////
-                std::pair<uint8_t, uint8_t> getScore() const;
+                const std::pair<uint8_t, uint8_t>& getScore() const;
         
         
                 ////////////////////////////////////////////////////////////////
