@@ -71,7 +71,7 @@ namespace othello
     
     
         ////////////////////////////////////////////////////////////////
-        std::pair<uint8_t, uint8_t> Game::getScore() const {return board.getScore();}
+        const std::pair<uint8_t, uint8_t>& Game::getScore() const {return board.getScore();}
     
     
         ////////////////////////////////////////////////////////////////

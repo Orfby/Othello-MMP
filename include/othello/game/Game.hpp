@@ -130,7 +130,7 @@ namespace othello
                 ///         player 1's score and the second is player 2's score
                 ///
                 ////////////////////////////////////////////////////////////////
-                std::pair<uint8_t, uint8_t> getScore() const;
+                const std::pair<uint8_t, uint8_t>& getScore() const;
         
         
                 ////////////////////////////////////////////////////////////////
