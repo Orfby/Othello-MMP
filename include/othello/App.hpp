@@ -14,14 +14,12 @@ namespace othello
     ////////////////////////////////////////////////////////////////
     class App
     {
-        private:
-        
-        
+
         public:
         
             ////////////////////////////////////////////////////////////////
-            /// \brief Function to start and run the program using the
-            ///        options from argc and argv
+            /// \brief Static function to start and run the program using
+            ///        the options from argc and argv
             ///
             /// \param argc argc from `main`
             /// \param argv argv from `main`
@@ -30,7 +28,7 @@ namespace othello
             ///         Should be returned from `main`
             ///
             ////////////////////////////////////////////////////////////////
-            int run(const int& argc, char** argv);
+            static int run(const int& argc, char** argv);
             
     };
     

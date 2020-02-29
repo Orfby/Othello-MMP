@@ -146,7 +146,7 @@ namespace othello
                     else
                     {
                         const auto score = game.getScore();
-                        std::cout << "Player " << (int)player << " won!" << std::endl;
+                        std::cout << "Player " << (int)player << " (" << (!(bool)(player - 1) ? 'X' : 'O') << ") won!" << std::endl;
                         std::cout << (unsigned int)score.first << " vs " << (unsigned int)score.second << std::endl;
                     }
                 });

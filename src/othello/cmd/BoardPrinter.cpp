@@ -14,7 +14,7 @@ namespace othello
                 const std::vector<game::Move>& possibleMoves)
         {
             //Print the board's state
-            std::cout << "Player " << (int)player << ":" << std::endl;
+            std::cout << "Player " << (int)player << " (" << (!(bool)(player - 1) ? 'X' : 'O') << "):" << std::endl;
             std::cout << "    a | b | c | d | e | f | g | h " << std::endl;
             for (uint8_t y = 0; y < othello::game::Board::BOARD_SIZE; ++y)
             {
