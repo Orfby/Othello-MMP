@@ -32,11 +32,19 @@ namespace othello
                 ///        numbers
                 ///
                 ////////////////////////////////////////////////////////////////
-                boost::random::mt19937 randomNumberGenerator{static_cast<unsigned int>(std::time(nullptr))};
+                boost::random::mt19937 randomNumberGenerator;
                 
                 
             public:
         
+                ////////////////////////////////////////////////////////////////
+                /// \brief Class constructor
+                ///
+                ////////////////////////////////////////////////////////////////
+                explicit RandomPlayer(const unsigned int& seed)
+                    : randomNumberGenerator(seed) {}
+                
+                
                 ////////////////////////////////////////////////////////////////
                 /// \brief Function that is called when the player should make a
                 ///        move. This function simply picks a random move in

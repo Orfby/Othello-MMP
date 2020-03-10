@@ -52,7 +52,7 @@ namespace othello
                 ///        numbers
                 ///
                 ////////////////////////////////////////////////////////////////
-                boost::random::mt19937 randomNumberGenerator{static_cast<unsigned int>(std::time(nullptr))};
+                boost::random::mt19937 randomNumberGenerator;
         
         
                 ////////////////////////////////////////////////////////////////
@@ -80,11 +80,12 @@ namespace othello
                 /// \param player The player number. 0 = player1, 1 = player2
                 /// \param searchDepth The search depth of the AI
                 /// \param numThreads The number of worker threads
+                /// \param seed The seed for the random generator
                 ///
                 ////////////////////////////////////////////////////////////////
                 explicit AlphaBetaPruningPlayer(const game::Game& game, const uint8_t& player,
-                        const unsigned int& searchDepth, const uint8_t& numThreads)
-                    : game(game), player(player), searchDepth(searchDepth),
+                        const unsigned int& searchDepth, const uint8_t& numThreads, const unsigned int& seed)
+                    : game(game), player(player), searchDepth(searchDepth), randomNumberGenerator(seed),
                         workerManager(std::bind(&AlphaBetaPruningPlayer::alphaBeta, this,
                                 std::placeholders::_1, std::placeholders::_2, //I really wish there were a better
                                 std::placeholders::_3, std::placeholders::_4, //syntax for doing this

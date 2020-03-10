@@ -27,6 +27,8 @@ namespace othello
             unsigned int searchDepth;
             //The number of threads
             unsigned int numThreads;
+            //The random generator seed
+            unsigned int seed;
             
             //Create the options description object
             boost::program_options::options_description description("Options");
@@ -43,14 +45,18 @@ namespace othello
                     ("possible-moves,pm", "Displays the possible moves")
                     ("num-games,ng", boost::program_options::value<unsigned int>(&numGames)->default_value(1),
                             "The number of games to play before exiting. 0 is infinite. Default is 1")
-                    ("search-depth,sd", boost::program_options::value<unsigned int>(&searchDepth)->default_value(5),
+                    ("search-depth,sd", boost::program_options::value<unsigned int>(&searchDepth)->default_value(3),
                             "The maximum number of moves an AI will look ahead. "
                             "Only applicable to players that try to predict moves, such as ai_ab_minimax. "
-                            "Larger numbers exponentially affect speed and memory use. Default is 5")
+                            "Larger numbers exponentially affect speed and memory use. Default is 3")
                     ("num-threads,t", boost::program_options::value<unsigned int>(&numThreads)->default_value(4),
                             "The number of worker threads an AI will use when determining moves. "
                             "Only applicable to players that use multithreading, such as ai_ab_minimax. "
-                            "Default is 4");
+                            "Default is 4")
+                    ("seed,s", boost::program_options::value<unsigned int>(&seed)->default_value(0),
+                            "An unsigned integer to be used as the seed for all random number generators. "
+                            "A value of 0 will use the current time in seconds since Epoch as the seed. "
+                            "Default is 0");
             
             //Create the variables map
             boost::program_options::variables_map variablesMap;
@@ -74,6 +80,9 @@ namespace othello
             
             //Check the options
             boost::program_options::notify(variablesMap);
+            
+            //Set the seed as the current time if it's 0
+            if (seed == 0) {seed = static_cast<unsigned int>(std::time(nullptr));}
             
             //If the game should display possibly moves
             bool displayPossibleMoves = variablesMap.count("possible-moves");
@@ -99,9 +108,9 @@ namespace othello
                 {
                     if (!guiMode) {players[i].reset(new othello::cmd::HumanPlayer());}
                 }
-                else if (playerType == "ai_random") {players[i].reset(new othello::ai::RandomPlayer());}
+                else if (playerType == "ai_random") {players[i].reset(new othello::ai::RandomPlayer(seed));}
                 else if (playerType == "ai_ab_minimax") {players[i].reset(new othello::ai::AlphaBetaPruningPlayer(
-                        game, i, searchDepth, numThreads));}
+                        game, i, searchDepth, numThreads, seed));}
                 else
                 {
                     std::cerr << "Unknown player type '" << playerTypes[i] << "'" << std::endl;
@@ -139,8 +148,12 @@ namespace othello
                 //Add a win callback
                 game.addWinCallback([&](const game::Game& game, const uint8_t& player)
                 {
-                    //Print the board
-                    cmd::BoardPrinter::print(game.getBoard(), player, {});
+                    //If the board isn't hidden
+                    if (!hideBoard)
+                    {
+                        //Print the board
+                        cmd::BoardPrinter::print(game.getBoard(), player, {});
+                    }
                     //If it was a draw
                     if (player == 0) {std::cout << "It was a draw!" << std::endl;}
                     else
@@ -151,6 +164,9 @@ namespace othello
                     }
                 });
                 
+                //Get the time now
+                auto start = std::chrono::system_clock::now();
+    
                 for (unsigned int i = 0; i < numGames; ++i)
                 {
                     std::cout << "Game " << i + 1 << "!" << std::endl;
@@ -159,6 +175,14 @@ namespace othello
                     //Reset the game
                     game.reset();
                 }
+    
+                //Get the time now
+                auto end = std::chrono::system_clock::now();
+    
+                //Calculate the difference between the start and end
+                std::chrono::duration<double> elapsed = end - start;
+                //Print it
+                std::cout << "Elapsed time: " << elapsed.count() << "s" << std::endl;
             }
             
             return EXIT_SUCCESS;
