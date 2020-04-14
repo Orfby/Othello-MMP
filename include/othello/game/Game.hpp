@@ -6,9 +6,12 @@
 #include <array>
 #include <memory>
 #include <functional>
+//Boost headers:
+#include <boost/optional.hpp>
 //Othello Headers:
 #include <othello/game/Board.hpp>
 #include <othello/game/IPlayer.hpp>
+#include <othello/stats/StatisticsManager.hpp>
 
 
 namespace othello
@@ -48,10 +51,39 @@ namespace othello
         
         
                 ////////////////////////////////////////////////////////////////
+                /// \brief The length of the game in turns
+                ///
+                ////////////////////////////////////////////////////////////////
+                unsigned int gameLength = 0;
+        
+        
+                ////////////////////////////////////////////////////////////////
                 /// \brief The two players
                 ///
                 ////////////////////////////////////////////////////////////////
                 std::array<std::shared_ptr<IPlayer>, 2> players = {nullptr, nullptr};
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief Whether to switch the players after each game
+                ///
+                ////////////////////////////////////////////////////////////////
+                bool switchPlayers = false;
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief Whether the players are currently switched
+                ///
+                ////////////////////////////////////////////////////////////////
+                bool playersAreSwitched = false;
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief An optional that possibly contains a statistics
+                ///        manager
+                ///
+                ////////////////////////////////////////////////////////////////
+                boost::optional<stats::StatisticsManager> stats;
         
         
                 ////////////////////////////////////////////////////////////////
@@ -91,6 +123,31 @@ namespace othello
                 ////////////////////////////////////////////////////////////////
                 void setPlayers(const std::shared_ptr<IPlayer>& player1,
                         const std::shared_ptr<IPlayer>& player2);
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief Function to set whether the players should be swapped
+                ///        after each game
+                ///
+                ////////////////////////////////////////////////////////////////
+                void enableSwitchPlayers(bool switchPlayers = true);
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief Function to manually switch the players.
+                ///
+                /// \note This function should be used to switch players over
+                ///       setPlayers as setPlayers can mess up statistics
+                ///
+                ////////////////////////////////////////////////////////////////
+                void manualSwitchPlayers();
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief Function to set the game board
+                ///
+                ////////////////////////////////////////////////////////////////
+                void setBoard(const Board& board);
                 
                 
                 ////////////////////////////////////////////////////////////////
@@ -174,6 +231,20 @@ namespace othello
                 ///
                 ////////////////////////////////////////////////////////////////
                 void addWinCallback(const callback_func_t& callback);
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief Function to enable the statistics manager
+                ///
+                ////////////////////////////////////////////////////////////////
+                void enableStatistics(const std::string& outFilePath, const std::string& infoString);
+        
+        
+                ////////////////////////////////////////////////////////////////
+                /// \brief Function to get the statistics manager
+                ///
+                ////////////////////////////////////////////////////////////////
+                boost::optional<stats::StatisticsManager>& getStatsManager();
         
         
                 ////////////////////////////////////////////////////////////////

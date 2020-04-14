@@ -6,7 +6,6 @@
 #include <array>
 //Othello headers
 #include <othello/game/Move.hpp>
-#include <othello/ai/MoveEvaluator.hpp>
 
 
 namespace othello
@@ -23,7 +22,6 @@ namespace othello
         ////////////////////////////////////////////////////////////////
         class Board
         {
-            friend othello::ai::MoveEvaluator;
             public:
         
                 ////////////////////////////////////////////////////////////////

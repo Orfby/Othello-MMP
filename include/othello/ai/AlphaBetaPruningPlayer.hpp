@@ -18,27 +18,13 @@ namespace othello
         ////////////////////////////////////////////////////////////////
         /// \class AlphaBetaPruningPlayer
         ///
-        /// \brief An AI player that plays moves using the negamax and
+        /// \brief An AI player that plays moves using the minimax and
         ///        alpha-beta pruning algorithms
         ///
         ////////////////////////////////////////////////////////////////
         class AlphaBetaPruningPlayer : public game::IPlayer
         {
             private:
-        
-                ////////////////////////////////////////////////////////////////
-                /// \brief A const reference to the game the AI is playing in
-                ///
-                ////////////////////////////////////////////////////////////////
-                const game::Game& game;
-        
-        
-                ////////////////////////////////////////////////////////////////
-                /// \brief Which player the AI is
-                ///
-                ////////////////////////////////////////////////////////////////
-                uint8_t player;
-        
         
                 ////////////////////////////////////////////////////////////////
                 /// \brief The search depth in number of moves ahead
@@ -59,16 +45,16 @@ namespace othello
                 /// \brief The alpha-beta recursive algorithm
                 ///
                 ////////////////////////////////////////////////////////////////
-                int64_t alphaBeta(const game::Board& board, const game::Move& move, uint8_t depth,
-                        int64_t alpha, int64_t beta);
+                static int64_t alphaBeta(const game::Board& board, const uint8_t& player, const game::Move& move,
+                        uint8_t depth, int64_t alpha, int64_t beta);
                 
         
                 ////////////////////////////////////////////////////////////////
                 /// \brief The worker thread manager
                 ///
                 ////////////////////////////////////////////////////////////////
-                util::WorkerThreadManager<int64_t, const game::Board&, const game::Move&,
-                        uint8_t, int64_t, int64_t> workerManager;
+                util::WorkerThreadManager<int64_t, const game::Board&, const uint8_t&,
+                        const game::Move&, uint8_t, int64_t, int64_t> workerManager;
         
                 
             public:
@@ -83,13 +69,9 @@ namespace othello
                 /// \param seed The seed for the random generator
                 ///
                 ////////////////////////////////////////////////////////////////
-                explicit AlphaBetaPruningPlayer(const game::Game& game, const uint8_t& player,
-                        const unsigned int& searchDepth, const uint8_t& numThreads, const unsigned int& seed)
-                    : game(game), player(player), searchDepth(searchDepth), randomNumberGenerator(seed),
-                        workerManager(std::bind(&AlphaBetaPruningPlayer::alphaBeta, this,
-                                std::placeholders::_1, std::placeholders::_2, //I really wish there were a better
-                                std::placeholders::_3, std::placeholders::_4, //syntax for doing this
-                                std::placeholders::_5), numThreads) {}
+                AlphaBetaPruningPlayer(const unsigned int& searchDepth, const uint8_t& numThreads, const unsigned int& seed)
+                    : searchDepth(searchDepth), randomNumberGenerator(seed),
+                        workerManager(&AlphaBetaPruningPlayer::alphaBeta, numThreads) {}
                 
                 
                 ////////////////////////////////////////////////////////////////
@@ -97,6 +79,9 @@ namespace othello
                 ///        move. This function uses the negamax and alpha-beta
                 ///        pruning algorithms to make a decision
                 ///
+                /// \param game A const reference to the game to make a move in
+                /// \param player The index of this player in the game. (0 is
+                ///        player 1, 1 is player 2)
                 /// \param possibleMoves A vector of the possible moves
                 ///
                 /// \return A const pointer to a const move that will be played
@@ -104,7 +89,8 @@ namespace othello
                 ///         move in possibleMoves
                 ///
                 ////////////////////////////////////////////////////////////////
-                const game::Move* makeMove(const std::vector<game::Move>& possibleMoves) override;
+                const game::Move* makeMove(const game::Game& game, const uint8_t& player,
+                        const std::vector<game::Move>& possibleMoves) override;
         
         };
         

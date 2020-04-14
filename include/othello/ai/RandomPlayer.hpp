@@ -57,7 +57,8 @@ namespace othello
                 ///         move in possibleMoves
                 ///
                 ////////////////////////////////////////////////////////////////
-                const game::Move* makeMove(const std::vector<game::Move>& possibleMoves) override
+                const game::Move* makeMove(const game::Game&, const uint8_t&,
+                        const std::vector<game::Move>& possibleMoves) override
                 {
                     //Create a uniform integer distribution
                     boost::random::uniform_int_distribution<> distribution(0, possibleMoves.size() - 1);

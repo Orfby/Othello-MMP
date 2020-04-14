@@ -36,7 +36,8 @@ namespace othello
                 ///         move in possibleMoves
                 ///
                 ////////////////////////////////////////////////////////////////
-                const game::Move* makeMove(const std::vector<game::Move>& possibleMoves) override
+                const game::Move* makeMove(const game::Game&, const uint8_t&,
+                        const std::vector<game::Move>& possibleMoves) override
                 {
                     std::string input;
                     while (true)

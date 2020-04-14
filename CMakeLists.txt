@@ -15,9 +15,11 @@ set(OTHELLO_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src/othello")
 set(OTHELLO_SOURCE_FILES
         "${OTHELLO_SOURCE_DIR}/ai/AlphaBetaPruningPlayer.cpp"
         "${OTHELLO_SOURCE_DIR}/ai/MoveEvaluator.cpp"
+        "${OTHELLO_SOURCE_DIR}/ai/QLearningPlayer.cpp"
         "${OTHELLO_SOURCE_DIR}/cmd/BoardPrinter.cpp"
         "${OTHELLO_SOURCE_DIR}/game/Board.cpp"
         "${OTHELLO_SOURCE_DIR}/game/Game.cpp"
+        "${OTHELLO_SOURCE_DIR}/stats/StatisticsManager.cpp"
         "${OTHELLO_SOURCE_DIR}/App.cpp"
 
         "${PROJECT_SOURCE_DIR}/src/main.cpp")
@@ -37,19 +39,30 @@ macro(forOS os)
             LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/${os}"
             ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin/${os}")
 
+    #Add some compile options
+    target_compile_options(othello PUBLIC "-fopenmp")
+
     #If this is debug mode
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         #Add the debug option
-        #target_compile_options(othello PUBLIC "-Og")
         target_compile_options(othello PUBLIC "-g")
+        #Define a "debug" macro
+        add_definitions(-DOTHELLO_DEBUG)
+        #Add "dbg" to the executable name
+        set_target_properties(othello
+                PROPERTIES
+                OUTPUT_NAME othello-dbg)
     #If this is release mode
     else()
         #Add the optimization option
-        target_compile_options(othello PUBLIC "-O1")
+        target_compile_options(othello PUBLIC "-O3")
     endif()
 
     #If this is windows
     if (${os} STREQUAL "windows")
+        target_link_libraries(othello
+                "-fopenmp"
+                "${PROJECT_SOURCE_DIR}/libs/lib/windows/libdoublefann_static.a")
         #If this is debug mode
         if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             #Add the windows debug libraries
@@ -63,7 +76,10 @@ macro(forOS os)
         endif()
     else()
         target_link_libraries(othello
-                "${PROJECT_SOURCE_DIR}/libs/lib/linux/libboost_program_options.a")
+                pthread
+                -fopenmp
+                "${PROJECT_SOURCE_DIR}/libs/lib/linux/libboost_program_options.a"
+                "${PROJECT_SOURCE_DIR}/libs/lib/linux/libdoublefann.a")
     endif()
 
 endmacro()

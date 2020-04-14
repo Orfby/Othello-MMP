@@ -9,13 +9,13 @@ namespace othello
     {
     
         ////////////////////////////////////////////////////////////////
-        int64_t AlphaBetaPruningPlayer::alphaBeta(const game::Board& board, const game::Move& move, uint8_t depth,
+        int64_t AlphaBetaPruningPlayer::alphaBeta(const game::Board& board, const uint8_t& player, const game::Move& move, uint8_t depth,
                           int64_t alpha, int64_t beta)
         {
             //If we've reached the max is depth or this is the last move
             if (depth == 0 || board.isOver())
             {
-                return ai::MoveEvaluator::evaluate(board, move, player);
+                return ai::MoveEvaluator::evaluate(board, player);
             }
         
             //Whether we're maximising (whether we want the best or worst move)
@@ -34,7 +34,7 @@ namespace othello
                 tmpBoard.makeMove(&tmpBoard.getPossibleMoves()[i]);
             
                 //Calculate the alpha beta
-                int64_t ret = alphaBeta(tmpBoard, board.getPossibleMoves()[i],
+                int64_t ret = alphaBeta(tmpBoard, player, board.getPossibleMoves()[i],
                                         depth - 1, alpha, beta);
                 
                 //If we want to maximise the value
@@ -57,7 +57,8 @@ namespace othello
     
         
         ////////////////////////////////////////////////////////////////
-        const game::Move* AlphaBetaPruningPlayer::makeMove(const std::vector<game::Move>& possibleMoves)
+        const game::Move* AlphaBetaPruningPlayer::makeMove(const game::Game& game, const uint8_t& player,
+                const std::vector<game::Move>& possibleMoves)
         {
             //Create a vector of the future move values
             std::vector<util::FutureValue<int64_t> > futureValues;
@@ -77,13 +78,13 @@ namespace othello
                     //Tell the worker to start and then add the future value to the vector
                     futureValues.emplace_back(
                             workerManager.startWork(
-                                    tmpBoard, game.getBoard().getPossibleMoves()[i],
+                                    tmpBoard, player, game.getBoard().getPossibleMoves()[i],
                                     searchDepth, INT64_MIN, INT64_MAX));
                 }
                 else
                 {
                     //Work on it in this thread and then place the value in the vector
-                    futureValues.emplace_back(alphaBeta(tmpBoard, game.getBoard().getPossibleMoves()[i],
+                    futureValues.emplace_back(alphaBeta(tmpBoard, player, game.getBoard().getPossibleMoves()[i],
                                                         searchDepth,INT64_MIN, INT64_MAX));
                 }
             }
