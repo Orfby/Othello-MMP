@@ -13,6 +13,9 @@
 #include <othello/ai/QLearningPlayer.hpp>
 
 
+#define OTHELLO_VERSION "1.0"
+
+
 namespace othello
 {
     
@@ -223,8 +226,8 @@ namespace othello
             if (variablesMap.count("version"))
             {
                 std::cout << "Program created for final year project "
-                             "\"Comparison of Reinforcement Learning Techniques to Play Othello\" "
-                             "created by Benjamin S. Hollier (beh43), version 0.1" << std::endl;
+                             "\"Analysis of Reinforcement Learning Techniques to Play Othello\" "
+                             "created by Benjamin S. Hollier (beh43), version " << OTHELLO_VERSION << std::endl;
                 return EXIT_SUCCESS;
             }
             
@@ -331,6 +334,7 @@ namespace othello
             #else
             infoStrStream << "Debug? false" << std::endl;
             #endif
+            infoStrStream << "Version: " << OTHELLO_VERSION << std::endl;
             infoStrStream << "Player 1: " << playerTypes[0] << std::endl;
             infoStrStream << "Player 2: " << playerTypes[1] << std::endl;
             infoStrStream << "Hide board? " << (hideBoard ? "true" : "false") << std::endl;
